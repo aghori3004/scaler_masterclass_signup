@@ -32,12 +32,15 @@ class ScalerAIEngine:
             return {"status": "error", "msg": str(e)}
 
     def generate_quiz_with_gemini(self, context_text):
+        # CHANGED: Prompt now asks for Easy/Fundamental questions
         prompt = f"""
-        Act as a Senior Technical Instructor. Analyze this curriculum: '''{context_text}'''
+        Act as a supportive Technical Mentor. Analyze this curriculum: '''{context_text}'''
         Task: Create a 5-question multiple-choice diagnostic quiz.
+        
         Requirements:
-        1. Questions must test PRE-REQUISITE knowledge for this specific topic.
-        2. Output valid JSON.
+        1. Difficulty: **Fundamental/Easy**. Test basic understanding to build confidence.
+        2. Tone: Encouraging.
+        3. Output valid JSON only.
         
         JSON Structure:
         [
@@ -52,9 +55,7 @@ class ScalerAIEngine:
             return []
 
     def generate_short_report(self, quiz_results, total_score, max_score, user_name):
-        """ 
-        Generates a SHORT, punchy report.
-        """
+        """ Generates a SHORT, punchy report. """
         performance_summary = f"Score: {total_score}/{max_score}\n"
         for res in quiz_results:
             status = "Correct" if res['is_correct'] else "Incorrect"
@@ -124,7 +125,7 @@ class ScalerAIEngine:
 
 st.set_page_config(page_title="Scaler AI Skill-Bridge", page_icon="🚀", layout="centered")
 
-# CSS FIXES (White text on White bg fixed)
+# CSS FIXES
 st.markdown("""
 <style>
     .stButton>button {width: 100%; border-radius: 5px; font-weight: bold;}
@@ -132,7 +133,7 @@ st.markdown("""
     /* Report Box Styling */
     .report-box {
         background-color: #f0f2f6; 
-        color: #000000; /* Force black text */
+        color: #000000; 
         padding: 20px; 
         border-radius: 10px; 
         border-left: 5px solid #007bff;
@@ -263,17 +264,17 @@ elif st.session_state.step == 3:
                 user['name'].split()[0]
             )
 
-    # 1. SCORE DISPLAY (Big & Visible)
+    # 1. SCORE DISPLAY
     st.title("Readiness Report")
     col_score, col_text = st.columns([1, 2])
     with col_score:
         st.metric(label="Your Score", value=f"{st.session_state.score}/{len(st.session_state.quiz)}")
     
-    # 2. SHORT REPORT (Black text on Grey)
+    # 2. SHORT REPORT
     st.markdown(f"<div class='report-box'>{st.session_state.ai_report}</div>", unsafe_allow_html=True)
     st.markdown("---")
     
-    # 3. ALUMNI FILTERS (Clear Logic)
+    # 3. ALUMNI FILTERS
     smart_data = st.session_state.engine.generate_smart_link_data(user['company'], user['grad_year'])
     
     col1, col2 = st.columns([2, 1])
@@ -281,7 +282,6 @@ elif st.session_state.step == 3:
         st.subheader("Your Career Path")
         st.write("See stories of alumni who made this exact transition:")
         
-        # Explicit Filter Visual
         st.markdown(f"""
         <div class="filter-box">
         📍 <b>Current:</b> {smart_data['current']} <br>
@@ -291,14 +291,13 @@ elif st.session_state.step == 3:
         """, unsafe_allow_html=True)
 
     with col2:
-        st.write("") # Spacer
+        st.write("") 
         st.write("")
         st.link_button("Read Their Stories ➝", smart_data['url'])
         st.session_state.clicked = True
 
     st.markdown("---")
     
-    # 4. SMALL CRM BUTTON
     col_x, col_y, col_z = st.columns([1, 2, 1])
     with col_y:
         if st.button("Simulate CRM Sync", type="secondary", use_container_width=True):
@@ -319,7 +318,7 @@ elif st.session_state.step == 4:
         "company": st.session_state.user['company'],
         "score": f"{st.session_state.score}/{len(st.session_state.quiz)}",
         "lead_warmth": warmth_score,
-        "ai_summary": st.session_state.ai_report[:100] + "..."
+        "ai_summary": st.session_state.ai_report # CHANGED: No longer truncated
     }
     
     st.json(payload)
