@@ -2,7 +2,7 @@
 
 An AI-powered tool designed to generate personalized diagnostic assessments for Scaler Masterclasses. Using **Google Gemini**, it analyzes curriculum content to create pre-requisite knowledge quizzes, provides tailored feedback, and routes users to relevant alumni success stories.
 
-[**View Live Deployment**](INSERT_YOUR_APP_LINK_HERE)
+[**View Live Deployment**](https://scalermasterclassapp-4bbaysgbbyzbqsj7ehvtdp.streamlit.app/)
 
 ## Features
 
